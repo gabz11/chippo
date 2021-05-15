@@ -18,7 +18,6 @@ void visualizer2() {
   color interA = lerpColor(topo, meio, .33); //esse e usado pra parte do topo do terreno, so pra nao ficar mt longe da cor do meio 
   color interB = lerpColor(baixo, meio, .33); //esse e usado pra parte funda do terreno, so pra nao ficar mt longe da cor do meio 
   //o lerpcolor ele praticamente junta as duas cores
-
   pushMatrix();
   color inverse = color(255-br, 255-bg, 255-bb); //esse e a variavel color q eu descobri q existe, ele pega a cor do background e subtrai em 255, q acaba invertendo ela
   strokeWeight(map(fft.getBand(1), -1, 20, 0.1, 0.4)); // a grossura do stroke da lua, o map ele vai pega o valor da frequencia do canal 1 e vai mapea de -1 ate 20 para 0.1 ate 0.3...
