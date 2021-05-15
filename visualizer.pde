@@ -91,6 +91,7 @@ void visualizer2() {
         //1,2,3 4band1, 3,2,1
         if (terreno[x][y] >= 28) {
           fft.scaleBand(x+10, 1.02);
+          if (xm > 36) fft.scaleBand(xm, 1.03);
           /*if (x>5 && x<15) fft.scaleBand(x, 1.01); // aumenta a escala dos canais das linhas x em algum valor, recomendo entre 1 e 1.1,
            else if (x>=15 && x<30) fft.scaleBand(x, 1.03);
            else if (x>=30) fft.scaleBand(x, 1.05);*/
