@@ -1,3 +1,5 @@
+
+
 void visualizer2() {
   luatam = 100; // reseta o tamanho da lua, pode mudar esse se quiser
   if (beat.isOnset() && fft.getBand(1) > 20 && cont3 == 0 && dinamico == true) {  //quando ele detecta uma batida, a frequencia da musica ta alta e o contador for igual a 0 ele muda a cor do grid, o motivo de ser meio dificil de mudar e pra nao ficar tao ruim no olho tanta cor mudando
@@ -18,6 +20,7 @@ void visualizer2() {
   color interA = lerpColor(topo, meio, .33); //esse e usado pra parte do topo do terreno, so pra nao ficar mt longe da cor do meio 
   color interB = lerpColor(baixo, meio, .33); //esse e usado pra parte funda do terreno, so pra nao ficar mt longe da cor do meio 
   //o lerpcolor ele praticamente junta as duas cores
+
   pushMatrix();
   color inverse = color(255-br, 255-bg, 255-bb); //esse e a variavel color q eu descobri q existe, ele pega a cor do background e subtrai em 255, q acaba invertendo ela
   strokeWeight(map(fft.getBand(1), -1, 20, 0.1, 0.4)); // a grossura do stroke da lua, o map ele vai pega o valor da frequencia do canal 1 e vai mapea de -1 ate 20 para 0.1 ate 0.3...
@@ -40,10 +43,11 @@ void visualizer2() {
     cont2 = false;
     //println(luaposcord);
   }
-  luaposcord = map(luapos, -500, 1500, 183, 835);
+  luaposcord = map(luapos, -500, 1500, 212, 820);
   popMatrix();
-  float limitecontornoquad = map(fft.getBand(1), 0, 70, 2, 2.7);
-  if (limitecontornoquad > 6) limitecontornoquad = 6;
+  float limitecontornoquad = map(fft.getBand(1), 0, 60, 2, 3);
+  if (limitecontornoquad > 4) limitecontornoquad = 4;
+  //println(limitecontornoquad);
   strokeWeight(limitecontornoquad); //stroke do terreno, os quadradinho, q tb muda quanto maior a frequencia do canal 1 da musica
   if (player.isPlaying()) { //se o player estiver tocando ele muda a velocidade da camera
     float cameraa = map(fft.getBand(1), -1, 10, 0.02, 0.028)+0.01;
@@ -59,7 +63,7 @@ void visualizer2() {
     for (int x = 0; x < cols; x++) { //aqui vai executar o codigo ate q o x seja igual ao numero de colunas e em cima o y igual ao numero de linhas
 
       //a diferenca do noise em relacao ao random, e q o noise faz os valores em volta serem parecidos, no nosso caso faz as elevacoes ficarem mais suaves, soq ele so faz de 0 a 1 entao tenq dar map()
-      terreno[x][y] = map(noise(x2, y2), 0, 1, -100, 130); //o -100 e a altura minima e o 100 maximo, a ideia a mudar isso de acordo com a musica
+      terreno[x][y] = map(noise(x2, y2), 0, 1, -100, 140); //o -100 e a altura minima e o 100 maximo, a ideia a mudar isso de acordo com a musica
       //vai definir um ponto entre os dois ultimos valores do map para cada linha em cada coluna, o terreno e usado pra mudar o valor z do ponto no grid
       x2 += 0.1;
     }
@@ -79,20 +83,27 @@ void visualizer2() {
       } else if (x >= cols/2) {
         xm ++;
       }
-      if (terreno[x][y] + 2> -20 && terreno[x][y] + 2< 20) { //isso e pra prencher o terreno com cor dependendo da altura definido aleatoriamente la em cima
+      if (terreno[x][y] > -20 && terreno[x][y] < 21) { //isso e pra prencher o terreno com cor dependendo da altura definido aleatoriamente la em cima
         fill(meio); //preenche os pontos entre -20 e 20 na cor interB
-      } else if (terreno[x][y] +2>= 20) { //se o ponto for maior ou igual a 20 
-        fill(interA); //preenche os pontos maior ou igual q 20 na cor interA e adiciona o valor da frequencia da musica vezes 1.5 pra ficar melhor de ver
+      } else if (terreno[x][y] >= 21) { //se o ponto for maior ou igual a 20 
+        fill(interA);
+        //preenche os pontos maior ou igual q 20 na cor interA e adiciona o valor da frequencia da musica vezes 1.5 pra ficar melhor de ver
         //1,2,3 4band1, 3,2,1
-        if (x>5 && x<15) fft.scaleBand(x, 1.02); // aumenta a escala dos canais das linhas x em algum valor, recomendo entre 1 e 1.1,
-        else if (x>=15 && x<30) fft.scaleBand(x, 1.05);
-        else if (x>=30) fft.scaleBand(x, 1.07);
-        terreno[x][y] += fft.getBand(xm)*1.7;
+        if (terreno[x][y] >= 28) {
+          fft.scaleBand(x+10, 1.02);
+          /*if (x>5 && x<15) fft.scaleBand(x, 1.01); // aumenta a escala dos canais das linhas x em algum valor, recomendo entre 1 e 1.1,
+           else if (x>=15 && x<30) fft.scaleBand(x, 1.03);
+           else if (x>=30) fft.scaleBand(x, 1.05);*/
+          terreno[x][y] += fft.getBand(xm)*1.7;
+        }
       } else {
 
         fill(interB); // muda a cor dos pontos mais fundos do grid
       }
-      if (terreno[x][y] > 400) terreno[x][y] = 400; //limite da altura do terreno
+      if (terreno[x][y] > 400) {
+        terreno[x][y] = 400; 
+        //println(xm);//limite da altura do terreno
+      }
       vertex(x*tam, y*tam, terreno[x][y]); //cria os pontos do grid
       vertex(x*tam, (y+1)*tam, terreno[x][y+1]); //o +1 e pra colocar o ponto na proxima posicao do y e do terreno
     }
@@ -105,33 +116,27 @@ void temacor() { // aqui define qual palette de cor pra colocar, pode fazer o te
     meio = color (139, 69, 20); 
     topo = color (255, 248, 220);
     baixo = color(80, 69, 19);
-  }
-  else if (click == 3) { // tema meio q parecido com gameboy
+  } else if (click == 3) { // tema meio q parecido com gameboy
     meio = color (11, 16, 0); 
     topo = color (164, 178, 111);
     baixo = color(162, 162, 162);
-  }
-  else if (click == 4) { // tema tommy hilfiger kk
+  } else if (click == 4) { // tema tommy hilfiger kk
     meio = color (16, 19, 35);   
     topo = color (191, 25, 25); 
     baixo = color(214, 212, 203);
-  }
-  else if (click == 5) { // tema roxo pq sim nao precisa de motivo
+  } else if (click == 5) { // tema roxo pq sim nao precisa de motivo
     meio = color (88, 2, 89);  
     topo = color (253, 232, 149); 
     baixo = color(212, 1, 252);
-  }
-  else if (click == 6) { //topo laranja, meio azul e baixo amarelo
+  } else if (click == 6) { //topo laranja, meio azul e baixo amarelo
     meio = color (32, 73, 144); 
     topo = color (220, 170, 40);
     baixo = color(225, 225, 140);
-  }
-  else if (click == 7) { //azul, azul escuro e cinza
+  } else if (click == 7) { //azul, azul escuro e cinza
     meio = color (19, 23, 60);  
     topo = color (68, 255, 255);
     baixo = color(115, 122, 134);
-  }
-  else if (click == 8) click = 1;
+  } else if (click == 8) click = 1;
   if (click == 1) { //tema padrao, preto cinza e branco
     meio = color (54, 54, 54);   
     topo = color (236, 236, 236); 
@@ -139,7 +144,7 @@ void temacor() { // aqui define qual palette de cor pra colocar, pode fazer o te
   }
 }
 
-void clicklua(){
+void clicklua() {
   //println("x:", mouseX, "lua: ", luaposcord);
   //println("y:", mouseY); //y entre 24 e 71 e x entre 78 e 413
   if (mouseX >= luaposcord - 50 && mouseX <= luaposcord + 30 && mouseY >= 130 && mouseY <= 200 || mouseX <= luaposcord - 50 && mouseX >= luaposcord + 30 && mouseY >= 130 && mouseY <= 200) {
