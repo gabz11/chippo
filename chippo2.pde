@@ -12,7 +12,6 @@ import java.awt.Point;
 // VARIAVEIS
 String selection;
 PFont fonte;
-PShader edges;
 PImage escolher, escolherSelecionado, play, playSelecionado, pause, pauseSelecionado, stop, stopSelecionado, barraVol, sobre, sobreSelecionado, volmenos, volmenosSelecionado, volmais, volmaisSelecionado, info, inst, instSelecionado, esquemaTeclado, erroAbrir, fechar, fecharSelecionado;
 float raio;
 // INTERFACE
@@ -27,7 +26,7 @@ color c7 = #d00000; // vermelho
 int vPreset = 1; 
 int volume = -2;
 // NOTAS MUSICAIS | FREQUENCIA
-boolean tSobre = false, cSobre = false, exibir = true;
+boolean tSobre = true, cSobre = true, exibir = true;
 // MODO INSTRUMENTO 
 int a = 440, aM = 466, b = 494, c = 524, cM = 554, d = 588, dM = 624, e = 660, f = 700, fM = 740, g = 784, gM = 832;
 boolean modoInstrumento = false, uniao = true, gravado = false;
@@ -109,14 +108,14 @@ void setup() {
   beat.setSensitivity(500);
   ellipseMode(RADIUS);
   raio = 20;
-  escolher = loadImage("interface/escolher1.png");
+  escolher = loadImage("interface/escolher.png");
   escolherSelecionado = loadImage("interface/escolherSelecionado.png");
-  play = loadImage("interface/playALT.png");
-  playSelecionado = loadImage("interface/playALTSelecionado.png");
-  pause = loadImage("interface/pauseALT.png");
-  pauseSelecionado = loadImage("interface/pauseALTSelecionado.png");
-  stop = loadImage("interface/stopALT.png");
-  stopSelecionado = loadImage("interface/stopALTSelecionado.png");
+  play = loadImage("interface/play.png");
+  playSelecionado = loadImage("interface/playSelecionado.png");
+  pause = loadImage("interface/pause.png");
+  pauseSelecionado = loadImage("interface/pauseSelecionado.png");
+  stop = loadImage("interface/stop.png");
+  stopSelecionado = loadImage("interface/stopSelecionado.png");
   barraVol = loadImage("interface/volume0.png");
   sobre = loadImage("interface/sobre.png");
   sobreSelecionado = loadImage("interface/sobreSelecionado.png");
@@ -171,8 +170,6 @@ void setup() {
   temacor();
   cam = new PeasyCam(this, 500, 0, 1000, 50);
   //
-  edges = loadShader("edges.glsl");
-
   cam.setActive(false); // EU DESATIVEI SO PQ EU N TO ENTENDO COMO Q FUNCIONA E N FUNCIONA COM O NGC DE CLICA NA LUA PRA MUDA O TEMA
 }
 void draw() {
@@ -186,21 +183,11 @@ void draw() {
     for (int i = 0; i < player.bufferSize(); i++)
     {
       cam.beginHUD();
-      stroke(255);
-      noFill();
+      stroke(c4);
       line(i, height/2+player.mix.get(i)*300, i, height/2-player.mix.get(i)*300);
+      cam.endHUD();
       rotate(PI);
-      cam.endHUD();
     }        
-    for (int i = 0; i < player.bufferSize(); i++)
-    {
-      cam.beginHUD();
-      stroke(c3, 150);
-      noFill();
-      line(i, height/2+player.mix.get(i)*300, i, height/2-player.mix.get(i)*300);
-      rotate(HALF_PI);
-      cam.endHUD();
-    }
   }
   if (vPreset == 2 && modoInstrumento == false) {
     //background(c4);
@@ -214,6 +201,9 @@ void draw() {
     segundos = (player.position()/1000)%60;
     minutos = player.position()/60000;
     cam.beginHUD();
+    fill(c4,50);
+    stroke(c2,80);
+    rect(0,0,301,108);
     image(escolher, 0, 0); 
     image(play, 86, 0); 
     image(pause, 129, 0); 
@@ -226,13 +216,13 @@ void draw() {
     image(fechar, 981, 0);
     fill(c4);
     if (segundos <= 9 && segundosTotal <=9) {
-      text(minutos+":0"+segundos+"/"+minutosTotal+":0"+segundosTotal, 10, 150);
+      text(minutos+":0"+segundos+"/"+minutosTotal+":0"+segundosTotal, 208, 95);
     } else if (segundos <= 9 && segundosTotal > 9) {
-      text(minutos+":0"+segundos+"/"+minutosTotal+":"+segundosTotal, 10, 150);
+      text(minutos+":0"+segundos+"/"+minutosTotal+":"+segundosTotal, 208, 95);
     } else if (segundos > 9 && segundosTotal <=9) {
-      text(minutos+":"+segundos+"/"+minutosTotal+":0"+segundosTotal, 10, 150);
+      text(minutos+":"+segundos+"/"+minutosTotal+":0"+segundosTotal, 208, 95);
     } else if (segundos > 9 && segundosTotal > 9) {
-      text(minutos+":"+segundos+"/"+minutosTotal+":"+segundosTotal, 10, 150);
+      text(minutos+":"+segundos+"/"+minutosTotal+":"+segundosTotal, 208, 95);
     }
     fill(c3, 125);
     noStroke();
@@ -286,8 +276,8 @@ void draw() {
   if (((mouseX>216 && mouseX < 259  ) && (mouseY<36)) && exibir == true && modoInstrumento == false) {
     image(sobreSelecionado, 216, 0);
   }
-  if (((mouseX>259 && mouseX < 302) && (mouseY<36)) && exibir == true && modoInstrumento == false) {
-    image(instSelecionado, 259, 0);
+  if (((mouseX>258 && mouseX < 301) && (mouseY<36)) && exibir == true && modoInstrumento == false) {
+    image(instSelecionado, 258, 0);
   }
   if (((mouseX > 0 && mouseX < 43  ) && (mouseY > 72 && mouseY < 99)) && exibir == true && modoInstrumento == false) {
     image(volmenosSelecionado, 0, 72);
@@ -505,8 +495,3 @@ void mouseClicked() {
   }
 }
 
-void removeFrameBorder() {
-  frame.removeNotify();
-  frame.setUndecorated(true);
-  frame.addNotify();
-}
