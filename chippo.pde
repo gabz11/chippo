@@ -425,6 +425,7 @@ void fileSelected(File selection) {
       fft.forward(player.mix);
     } else {
       erroArquivo = true;
+      cSobre = false;
     }
   }
   // evento de atalhos
