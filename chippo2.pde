@@ -94,45 +94,43 @@ float camera;
 //em java chama um array de duas dimensoes dessa maneira
 float[][] terreno;
 // FIM VISUALIZER 2
-//
 void setup() {
   // CANVAS
   fullScreen(P3D);
   surface.setSize(1024, 768);
   surface.setLocation((displayWidth/2)-(width/2), (displayHeight/2)-(height/2));
   background(0);
-  fonte = createFont("Seurat.otf", 14);
+  fonte = createFont("fonte/Seurat.otf", 14);
   textFont(fonte);
-  //
   minim = new Minim(this);
-  player = minim.loadFile("track1.mp3", 1024);
+  player = minim.loadFile("musica/track1.mp3", 1024);
   beat = new BeatDetect();
   meta = player.getMetaData();
   beat.setSensitivity(500);
   ellipseMode(RADIUS);
   raio = 20;
-  escolher = loadImage("escolher1.png");
-  escolherSelecionado = loadImage("escolherSelecionado.png");
-  play = loadImage("playALT.png");
-  playSelecionado = loadImage("playALTSelecionado.png");
-  pause = loadImage("pauseALT.png");
-  pauseSelecionado = loadImage("pauseALTSelecionado.png");
-  stop = loadImage("stopALT.png");
-  stopSelecionado = loadImage("stopALTSelecionado.png");
-  barraVol = loadImage("volume0.png");
-  sobre = loadImage("sobre.png");
-  sobreSelecionado = loadImage("sobreSelecionado.png");
-  volmenos = loadImage("volmenos.png");
-  volmenosSelecionado = loadImage("volmenosSelecionado.png");
-  volmais = loadImage("volmais.png");
-  volmaisSelecionado = loadImage("volmaisSelecionado.png");
-  info = loadImage("info.png");
-  inst = loadImage("modoinstrumento.png");
-  instSelecionado = loadImage("modoinstrumentoSelecionado.png");
-  esquemaTeclado = loadImage("esquemaTeclado.png");
-  erroAbrir = loadImage("erroArquivo.png");
-  fechar = loadImage("fechar.png");
-  fecharSelecionado = loadImage("fecharSelecionado.png");
+  escolher = loadImage("interface/escolher1.png");
+  escolherSelecionado = loadImage("interface/escolherSelecionado.png");
+  play = loadImage("interface/playALT.png");
+  playSelecionado = loadImage("interface/playALTSelecionado.png");
+  pause = loadImage("interface/pauseALT.png");
+  pauseSelecionado = loadImage("interface/pauseALTSelecionado.png");
+  stop = loadImage("interface/stopALT.png");
+  stopSelecionado = loadImage("interface/stopALTSelecionado.png");
+  barraVol = loadImage("interface/volume0.png");
+  sobre = loadImage("interface/sobre.png");
+  sobreSelecionado = loadImage("interface/sobreSelecionado.png");
+  volmenos = loadImage("interface/volmenos.png");
+  volmenosSelecionado = loadImage("interface/volmenosSelecionado.png");
+  volmais = loadImage("interface/volmais.png");
+  volmaisSelecionado = loadImage("interface/volmaisSelecionado.png");
+  info = loadImage("interface/info.png");
+  inst = loadImage("interface/modoinstrumento.png");
+  instSelecionado = loadImage("interface/modoinstrumentoSelecionado.png");
+  esquemaTeclado = loadImage("interface/esquemaTeclado.png");
+  erroAbrir = loadImage("interface/erroArquivo.png");
+  fechar = loadImage("interface/fechar.png");
+  fecharSelecionado = loadImage("interface/fecharSelecionado.png");
   // SINTETIZADOR
   osc1 = new Oscil( 440, 0f, Waves.SQUARE ); 
   osc2 = new Oscil( 440, 0f, Waves.SAW); 
@@ -160,7 +158,7 @@ void setup() {
   adsr2.patch( bc2 ).patch( delay2 ).patch(gain2).patch(out);
   adsr3.patch( bc3 ).patch( delay3 ).patch(gain3).patch(out);
   // GRAVADOR
-  gravador = minim.createRecorder(out, "gravacao.wav");
+  gravador = minim.createRecorder(out, "gravacoes/gravacao.wav");
   // TEMPO
   segundosTotal = (player.length()/1000)-((player.length()/60000)*60);
   minutosTotal = player.length()/60000;
@@ -264,6 +262,7 @@ void draw() {
   //
   // Da linha 138 até 
   if (modoInstrumento == true) {
+    exibir = false;
     modoInstrumento = true;
     modoInstrumento();
   }
@@ -296,32 +295,35 @@ void draw() {
   if (((mouseX > 43 && mouseX < 86  ) && (mouseY > 72 && mouseY < 99)) && exibir == true && modoInstrumento == false) {
     image(volmaisSelecionado, 43, 72);
   }
+  if (((mouseX>981 ) && (mouseY<32)) && exibir == true) {
+    image(fecharSelecionado, 981, 0);
+  }
   cam.endHUD();
   if (volume == 0 && modoInstrumento == false) {
-    barraVol = loadImage("volume0.png");
+    barraVol = loadImage("interface/volume0.png");
     player.setGain(0);
   }
   if (volume == -1 && modoInstrumento == false) {
-    barraVol = loadImage("volume-1.png");
+    barraVol = loadImage("interface/volume-1.png");
     player.setGain(-8);
   }
   if (volume == -2 && modoInstrumento == false) {
-    barraVol = loadImage("volume-2.png");
+    barraVol = loadImage("interface/volume-2.png");
     player.setGain(-16);
   }
   if (volume ==-3 && modoInstrumento == false) {
     player.setGain(-24);
-    barraVol = loadImage("volume-3.png");
+    barraVol = loadImage("interface/volume-3.png");
   }
   if (volume ==-4 && modoInstrumento == false)
   {
     player.setGain(-30);
-    barraVol = loadImage("volume-4.png");
+    barraVol = loadImage("interface/volume-4.png");
   }
   if (volume == -5 && modoInstrumento == false)
   {
     player.setGain(-100);
-    barraVol = loadImage("volume-5.png");
+    barraVol = loadImage("interface/volume-5.png");
   }
   // FORÇAR VOLUME 
   // UM VALOR
@@ -337,20 +339,14 @@ void draw() {
 void mousePressed() {
   if(modoInstrumento == true)
   {hudmodoInstrumento();}
-  if ((mouseX >= luaposcord - 30 && mouseX <= luaposcord + 30 && mouseY >= 24 && mouseY <= 71 || mouseX <= luaposcord - 30 && mouseX >= luaposcord + 30 && mouseY >= 24 && mouseY <= 71) && modoInstrumento == false && vPreset == 2) {
-    click++;
-    temacor();
-  }
   if ((mouseX > 86 && mouseX < 301) && (mouseY > 36 && mouseY < 48) && modoInstrumento == false && exibir == true) {
     int posicao = int(map(mouseX, 86, 301, 0, player.length() ) );
     player.cue( posicao );
   }
-  if (((mouseX<86) && (mouseY<72)) && exibir == true && modoInstrumento == false)
-  {
-    player.pause();
+  if(((mouseX<86) && (mouseY<72)) && modoInstrumento == false && exibir == true && mousePressed == true)
+  { player.pause();
     player.rewind();
-    selectInput("Selecione o arquivo (.MP3/.WAV/.AIFF/.AU/.SND):", "fileSelected");
-  }
+    selectInput("Selecione o arquivo (.MP3/.WAV/.AIFF/.AU/.SND):", "fileSelected");}
   // play
   if (((mouseX>86 && mouseX < 130 ) && (mouseY<36)) && exibir == true && modoInstrumento == false)
   {
@@ -404,6 +400,9 @@ void mousePressed() {
     player.pause();
     modoInstrumento = true;
   }
+  if (((mouseX>981 ) && (mouseY<32)) && exibir == true) {
+    exit();
+  }
   // MODO INSTRUMENTO
 }
 // PLAYER
@@ -440,10 +439,11 @@ void fileSelected(File selection) {
   }
   // evento de atalhos
 }
-public void keyPressed() {
+void keyPressed() {
   if (modoInstrumento == true)
   {teclasmodoInstrumento();}
-  if (key == 'd' || key == 'D' && vPreset == 2) { // se aperta d o boolean dinamica fica positivo ou negativo dependendo da situacao atual dele, se true a cor do terreno vai mudar de vez em quando
+  if (key == 'd' || key == 'D' && vPreset == 2) {
+    // se aperta d o boolean dinamica fica positivo ou negativo dependendo da situacao atual dele, se true a cor do terreno vai mudar de vez em quando
     if (dinamico == false) dinamico = true; 
     else dinamico = false;
     temacor();
@@ -497,6 +497,11 @@ void keyReleased() {
     osc1.setAmplitude(0f);  
     osc2.setAmplitude(0f);
     osc3.setAmplitude(0f);
+  }
+}
+void mouseClicked() {
+  if (vPreset == 2) {
+    clicklua();
   }
 }
 
