@@ -151,9 +151,6 @@ void modoInstrumento()
   if ((mouseX > 43 && mouseX < 86) && mouseY < 36 && modoInstrumento == true) {
     image(sobreSelecionado, 43, 0);
   }
-  if (((mouseX>981 ) && (mouseY<32)) && exibir == true) {
-    image(fecharSelecionado, 981, 0);
-  }
   cam.endHUD();}
 void hudmodoInstrumento()
   {
@@ -161,12 +158,13 @@ void hudmodoInstrumento()
     osc1.setAmplitude(0f);
     osc2.setAmplitude(0f);
     osc3.setAmplitude(0f);
-    modoInstrumento = false;
     if (gravacao != null) 
     {
       gravacao.pause(); 
       gravacao.rewind();
     }
+    modoInstrumento = false;
+    mousePressed = false;
   }
   if ((mouseX > 43 && mouseX < 86) && mouseY < 36 && modoInstrumento == true)
   {
@@ -181,9 +179,6 @@ void hudmodoInstrumento()
   if ((mouseX > 273 && mouseX < 773) && (mouseY >117 && mouseY <417) && tSobre==true && modoInstrumento == true)
   {
     tSobre = false;
-  }
-  if (((mouseX>981 ) && (mouseY<32)) && exibir == true) {
-    exit();
   }
 }
 void teclasmodoInstrumento()
