@@ -140,6 +140,7 @@ void modoInstrumento()
         text("Pressione V para ouvir a gravação...", 300, 500);
         text("Pressione B para pausar a gravação...", 300, 520);
       }
+      stroke(c1);
       line( i, 500 - out.mix.get(i)*100, i+1, 500 - out.mix.get(i+1)*100 );
     }
   cam.endHUD();
