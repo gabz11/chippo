@@ -140,7 +140,7 @@ void temacor() { // aqui define qual palette de cor pra colocar, pode fazer o te
   }
 }
 
-void mouseClicked() {
+void clicklua(){
   //println("x:", mouseX, "lua: ", luaposcord);
   //println("y:", mouseY); //y entre 24 e 71 e x entre 78 e 413
   if (mouseX >= luaposcord - 50 && mouseX <= luaposcord + 30 && mouseY >= 130 && mouseY <= 200 || mouseX <= luaposcord - 50 && mouseX >= luaposcord + 30 && mouseY >= 130 && mouseY <= 200) {
