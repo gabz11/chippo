@@ -888,3 +888,12 @@ void teclasmodoInstrumento()
     gravacao.rewind();
   }
   }
+void soltarTecla()
+  {
+  if ( key !='1' && key!='2' && key !='3' && key !='4' && key !='5' && key !='6' && key !='7' && key !='8' && key !='9' &&  key !=TAB && modoInstrumento == true && latch == false)
+  {
+    osc1.setAmplitude(0f);  
+    osc2.setAmplitude(0f);
+    osc3.setAmplitude(0f);
+  }
+  }
