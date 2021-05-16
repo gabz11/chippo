@@ -9,6 +9,7 @@ import peasy.PeasyCam;
 import processing.awt.PSurfaceAWT;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import controlP5.*;
 // VARIAVEIS
 String selection;
 PFont fonte;
@@ -41,7 +42,8 @@ boolean fPreset1 = true, fPreset2 = false, fPreset3 = false, fPreset4 = false;
 boolean salvo = false;
 boolean mp3 = true, erroArquivo = false;
 boolean terminou;
-//
+boolean visuDinamico = false;
+// MODO INSTRUMENTO
 int segundos, minutos;
 int segundosTotal, minutosTotal;
 int contaSegundo = 1000;
@@ -56,9 +58,21 @@ AudioMetaData meta;
 AudioOutput out;
 // detector de batida para visualizer
 BeatDetect beat;
-FFT fft;
+FFT fft, logfft;
 PeasyCam cam;
-
+//
+//VISUALIZER 3
+int tComprimento = 1024;
+int aComprimento = 768;
+float escalaSpectro = 2;
+float strokeMax = 10;
+float strokeMin = 2;
+float strokeMultiplier = 1; 
+float audioThresh = .9;
+float[] circulos = new float [29];
+float taxaCaida = 2;
+//VISUALIZER 3
+//
 // SINTETIZADOR aka MODO INSTRUMENTO
 // osciladores, filtro ADSR & modulação(Bitcrush + DELAY)
 AudioSample loop1,loop2,loop3,loop4;
@@ -166,10 +180,14 @@ void setup() {
   adsr2.patch( bc2 ).patch( delay2 ).patch(gain2).patch(out);
   adsr3.patch( bc3 ).patch( delay3 ).patch(gain3).patch(out);
   // GRAVADOR
-  gravador = minim.createRecorder(out, "gravacoes/gravacao.wav");
+  gravador = minim.createRecorder(out, "gravacao.wav");
   // TEMPO
   segundosTotal = (player.length()/1000)-((player.length()/60000)*60);
   minutosTotal = player.length()/60000;
+  //
+  // VISU 3
+  logfft = new FFT(player.bufferSize(), player.sampleRate());
+  logfft.logAverages(22,3);
   //
   // VISUALIZER TERRENO
   cols = lar / tam; //o tamanho de colunas e igual a largura do grid dividido pelo tamanho do quadradinho
@@ -184,6 +202,10 @@ void setup() {
 void draw() {
   beat.detect(player.mix);
   fft.forward(player.mix);
+  // modo VISUDINAMICO
+  // se visudinamico verdade, todo onset de beat ele troca entre os 3 presets
+  if(visuDinamico == true)
+  {if (beat.isOnset()){vPreset = (int) random(1,4);}}
   //fill(c3);
   // MODO VISUALIZADOR / PLAYER
   // PRESET 1 = padrão
@@ -192,17 +214,18 @@ void draw() {
     for (int i = 0; i < player.bufferSize(); i++)
     {
       cam.beginHUD();
-      stroke(c4);
+      stroke(c1,player.mix.get(i)*600);
       line(i, height/2+player.mix.get(i)*300, i, height/2-player.mix.get(i)*300);
-      cam.endHUD();
       rotate(PI);
+      cam.endHUD();
     }        
   }
   if (vPreset == 2 && modoInstrumento == false) {
     //background(c4);
     visualizer2();
   }
-
+  if (vPreset == 3 && modoInstrumento == false)
+  {visualizer3();}
   // botão escolher 86x72
   // 43x36 demais botões
   if (exibir == true && modoInstrumento == false)
@@ -246,6 +269,13 @@ void draw() {
       fill(c4); 
       textSize(14); 
       text(meta.author()+"  -  "+meta.title()+"  -  "+meta.album(), 10, 130);   
+      cam.endHUD();
+    }
+    if (visuDinamico == true)
+    {
+      cam.beginHUD();
+      fill(c4);
+      text("Modo aleatório ativado.",10,150);
       cam.endHUD();
     }
   }
@@ -441,14 +471,28 @@ void fileSelected(File selection) {
   // evento de atalhos
 }
 void keyPressed() {
+  // modo VISUDINAMICO
+  if (key =='0' && modoInstrumento == false)
+  {
+  if(visuDinamico == false)
+  {visuDinamico = true;}
+  else if(visuDinamico == true)
+  {visuDinamico = false;}
+  }
+  // 
+  // TECLAS MODO INSTRUMENTO
   if (modoInstrumento == true)
   {teclasmodoInstrumento();}
+  //
+  // FUNÇÃO ESCONDIDA LUA
   if (key == 'd' || key == 'D' && vPreset == 2) {
     // se aperta d o boolean dinamica fica positivo ou negativo dependendo da situacao atual dele, se true a cor do terreno vai mudar de vez em quando
     if (dinamico == false) dinamico = true; 
     else dinamico = false;
     temacor();
   }
+  //
+  // ATALHOS
   if ((key =='-') && modoInstrumento == false)
   {
     volume -= 1;
@@ -481,23 +525,22 @@ void keyPressed() {
       exibir = true;
     }
   }
-  // MODO INSTRUMENTO
-  // NOTAS MUSICAIS
-  
+  // PRESETS VISUALIZAÇÃO  
   if (key == '1' && modoInstrumento == false) {
     vPreset=1;
   }
   if (key == '2' && modoInstrumento == false) {
     vPreset=2;
   }
-  
+  if (key == '3' && modoInstrumento == false)
+  { vPreset=3;}
+  //
 }
 void keyReleased() {
-  if ( key !='1' && key!='2' && key !='3' && key !='4' && key !='5' && key !='6' && key !='7' && key !='8' && key !='9' &&  key !=TAB && modoInstrumento == true && latch == false)
+  // SOLTAR TECLAS || MODO INSTRUMENTO
+  if ( modoInstrumento == true)
   {
-    osc1.setAmplitude(0f);  
-    osc2.setAmplitude(0f);
-    osc3.setAmplitude(0f);
+  soltarTecla();
   }
 }
 void mouseClicked() {
