@@ -30,11 +30,14 @@ boolean tSobre = true, cSobre = true, exibir = true;
 // MODO INSTRUMENTO 
 int a = 440, aM = 466, b = 494, c = 524, cM = 554, d = 588, dM = 624, e = 660, f = 700, fM = 740, g = 784, gM = 832;
 boolean modoInstrumento = false, uniao = true, gravado = false;
-boolean dPreset1 = true, dPreset2 = false, dPreset3 = false, dPreset4 = false;
+boolean dtPreset1 = true, dtPreset2 = false, dtPreset3 = false, dtPreset4 = false, dtPreset5 = false;
+boolean daPreset1= true, daPreset2 = false, daPreset3 = false, daPreset4 = false, daPreset5 = false;
 boolean bcPreset1 = true, bcPreset2 = false, bcPreset3 = false, bcPreset4 = false;
 boolean latch = false;
 boolean oPreset1 = false, oPreset2 = false, oPreset3 = true, oPreset4 = false, oPreset5 = false;
 boolean gPreset1 = true, gPreset2 = false, gPreset3 = false, gPreset4 = false;
+boolean rPreset1 = true, rPreset2 = false, rPreset3 = false, rPreset4 = false, rPreset5 = false;
+boolean fPreset1 = true, fPreset2 = false, fPreset3 = false, fPreset4 = false;
 boolean salvo = false;
 boolean mp3 = true, erroArquivo = false;
 boolean terminou;
@@ -55,9 +58,12 @@ AudioOutput out;
 BeatDetect beat;
 FFT fft;
 PeasyCam cam;
+
 // SINTETIZADOR aka MODO INSTRUMENTO
 // osciladores, filtro ADSR & modulação(Bitcrush + DELAY)
+AudioSample loop1,loop2,loop3,loop4;
 Oscil osc1, osc2, osc3;
+MoogFilter filtro1,filtro2,filtro3;
 Gain gain1, gain2, gain3;
 ADSR adsr1, adsr2, adsr3;
 Delay delay1, delay2, delay3;
@@ -140,9 +146,9 @@ void setup() {
   gain1 = new Gain(0.f); 
   gain2 = new Gain(0.f); 
   gain3 = new Gain(0.f);
-  delay1 = new Delay(0.1, 0, true, true); 
-  delay2 = new Delay(0.1, 0, true, true);
-  delay3 = new Delay(0.1, 0, true, true);
+  delay1 = new Delay(0.2, 0, true, true); 
+  delay2 = new Delay(0.2, 0, true, true);
+  delay3 = new Delay(0.2, 0, true, true);
   out = minim.getLineOut(Minim.STEREO, 1024, 44100, 16);
   adsr1.noteOn(); 
   adsr2.noteOn(); 
@@ -150,9 +156,12 @@ void setup() {
   bc1 = new BitCrush(16, out.sampleRate()); 
   bc2 = new BitCrush(16, out.sampleRate()); 
   bc3 = new BitCrush(16, out.sampleRate());
-  osc1.patch(adsr1); 
-  osc2.patch(adsr2);
-  osc3.patch(adsr3);
+  filtro1    = new MoogFilter( 4000, 0.2 );
+  filtro2    = new MoogFilter( 4000, 0.2 );
+  filtro3    = new MoogFilter( 4000, 0.2 );
+  osc1.patch(filtro1).patch(adsr1); 
+  osc2.patch(filtro2).patch(adsr2);
+  osc3.patch(filtro3).patch(adsr3);
   adsr1.patch( bc1 ).patch( delay1 ).patch(gain1).patch(out);
   adsr2.patch( bc2 ).patch( delay2 ).patch(gain2).patch(out);
   adsr3.patch( bc3 ).patch( delay3 ).patch(gain3).patch(out);
@@ -253,6 +262,7 @@ void draw() {
   // Da linha 138 até 
   if (modoInstrumento == true) {
     exibir = false;
+    cSobre = false;
     modoInstrumento = true;
     modoInstrumento();
   }
@@ -495,4 +505,3 @@ void mouseClicked() {
     clicklua();
   }
 }
-
