@@ -493,6 +493,11 @@ void keyPressed() {
   }
   //
   // ATALHOS
+  if (key == ENTER && modoInstrumento == false)
+  {
+    player.pause();
+    player.rewind();
+  }
   if ((key =='-') && modoInstrumento == false)
   {
     volume -= 1;
